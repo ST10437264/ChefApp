@@ -1,135 +1,196 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';  // (The IIE, 2024) 
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-export default function AddItemScreen ({ navigation }: { navigation: any }) {
-  const [menuItems, setMenuItems] = useState({
-    Starters: [],
-    Main: [],
-    Dessert: [],
-  });
 
-  const [dishName, setDishName] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Starters'); // Default category
+export default function AddItemsScreen({ route }) {   // (The IIE, 2024) 
+  const { menuData, setMenuData } = route.params;  
+  const [newItem, setNewItem] = useState({ title: '', description: '', price: '' });
+  const [selectedCourse, setSelectedCourse] = useState('Starters');
+  const navigation = useNavigation();
 
-  // Add item to the selected category
-  const addItem = () => {
-    if (!dishName || !description || !price) {
-      Alert.alert('Error', 'Please enter valid dish name, description, and price');
+  const handleSave = () => {
+    if (!newItem.title || !newItem.description || !newItem.price) {
+      Alert.alert('Please fill in all fields.');
       return;
     }
 
-    const newItem = {
-      title: dishName,
-      description,
-      price: parseFloat(price), // Ensure price is a number
+    const newItemData = {
+      id: Date.now(), 
+      title: newItem.title,
+      description: newItem.description,
+      price: parseFloat(newItem.price),
     };
 
-    setMenuItems(prevItems => ({
-      ...prevItems,
-      [selectedCategory]: [...prevItems[selectedCategory], newItem], // Add new item to selected category
-    }));
+    
+    setMenuData((prevData) => {
+      
+      const updatedData = { ...prevData };
 
-    // Reset form fields
-    setDishName('');
-    setDescription('');
-    setPrice('');
+      
+      updatedData[selectedCourse] = [...updatedData[selectedCourse], newItemData];
+      return updatedData;
+    });
+
+   
+    setNewItem({ title: '', description: '', price: '' });  // (React Native, 2024)
+    navigation.goBack();  // Navigate back to the HomeScreen
   };
 
-  // Calculate the average price for a given category
-  const calculateAveragePrice = (category) => {
-    const items = menuItems[category];
-    if (items.length === 0) return 0;
-    const totalPrice = items.reduce((sum, item) => sum + item.price, 0);
-    return totalPrice / items.length;
+  const handleRemoveItem = (itemId) => {
+    setMenuData((prevData) => {
+    
+      const updatedData = { ...prevData };
+
+     
+      updatedData[selectedCourse] = updatedData[selectedCourse].filter(
+        (existingItem) => existingItem.id !== itemId 
+      );
+      return updatedData;  // (React Native, 2024)
+    });
   };
 
-  return (
-    <ScrollView style={styles.container}>
+  return (  // (The IIE, 2024) 
+    <View style={styles.container}>
+      <Image style={styles.logo} source={require('./images/logo.png')} />
+      <Text style={styles.title}>Add New Menu Item</Text>
+
+      {/* Course Selection */}
+      <View style={styles.courseSelectionContainer}>
+        <TouchableOpacity onPress={() => setSelectedCourse('Starters')}>
+          <Text style={selectedCourse === 'Starters' ? styles.selectedButton : styles.button}>Starters</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setSelectedCourse('Mains')}>
+          <Text style={selectedCourse === 'Mains' ? styles.selectedButton : styles.button}>Mains</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setSelectedCourse('Desserts')}>
+          <Text style={selectedCourse === 'Desserts' ? styles.selectedButton : styles.button}>Desserts</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Input Fields */}
       <TextInput
         style={styles.input}
-        placeholder="Dish Name"
-        value={dishName}
-        onChangeText={setDishName}
+        placeholder="Item Title"
+        value={newItem.title}
+        onChangeText={(text) => setNewItem({ ...newItem, title: text })}
       />
       <TextInput
         style={styles.input}
         placeholder="Description"
-        value={description}
-        onChangeText={setDescription}
+        value={newItem.description}
+        onChangeText={(text) => setNewItem({ ...newItem, description: text })}
       />
       <TextInput
         style={styles.input}
         placeholder="Price"
-        value={price}
-        onChangeText={setPrice}
+        value={newItem.price}
         keyboardType="numeric"
+        onChangeText={(text) => setNewItem({ ...newItem, price: text })}
       />
 
-      <View style={styles.categoryContainer}>
-        {['Starters', 'Main', 'Dessert'].map((category) => (
-          <TouchableOpacity
-            key={category}
-            style={[
-              styles.categoryButton,
-              selectedCategory === category && styles.selectedCategory,
-            ]}
-            onPress={() => setSelectedCategory(category)}
-          >
-            <Text style={styles.categoryText}>{category}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      {/* Save Button */}
+      <TouchableOpacity onPress={handleSave} style={styles.button}>
+        <Text style={styles.buttonText}>Save Item</Text>
+      </TouchableOpacity>
 
-      <Button title="Add Item" onPress={addItem} color="silver" />
-
-      <Text style={styles.sectionTitle}>
-        Starters (Average Price: ${calculateAveragePrice('Starters').toFixed(2)})
-      </Text>
-      <Text style={styles.sectionTitle}>
-        Main (Average Price: ${calculateAveragePrice('Main').toFixed(2)})
-      </Text>
-      <Text style={styles.sectionTitle}>
-        Dessert (Average Price: ${calculateAveragePrice('Dessert').toFixed(2)})
-      </Text>
-    </ScrollView>
+      {/* Menu List */}
+      <FlatList
+        data={menuData[selectedCourse]}
+        renderItem={({ item }) => (
+          <View style={styles.itemContainer}>
+            <Text style={styles.itemText}>{item.title} - ${item.price}</Text>
+            <TouchableOpacity
+              onPress={() => handleRemoveItem(item.id)} 
+              style={styles.removeButton}
+            >
+              <Text style={styles.removeButtonText}>Remove</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        keyExtractor={(item) => item.id.toString()}
+      />
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({   // (The IIE, 2024) 
   container: {
+    flex: 1,
     padding: 20,
     backgroundColor: '#AE8BA2',
   },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    paddingLeft: 10,
-  },
-  categoryContainer: {
-    flexDirection: 'row',
+  logo: {
+    width: 100,
+    height: 100,
+    alignSelf: 'center',
     marginBottom: 20,
   },
-  categoryButton: {
-    backgroundColor: 'silver',
-    padding: 10,
-    margin: 5,
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+    color: 'black',
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: 'gray',
+    padding: 12,
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  selectedButton: {
+    backgroundColor: 'lightgray',
+    padding: 11,
+    borderRadius: 5,
+    textAlign: 'center',
+  },
+  courseSelectionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+  },
+  input: {
+    width: '100%',
+    height: 40,
+    borderColor: 'black',
+    borderWidth: 1,
+    marginBottom: 15,
+    paddingLeft: 10,
     borderRadius: 5,
   },
-  selectedCategory: {
-    backgroundColor: '#AE8BA2',
+  itemContainer: {
+    backgroundColor: '#fff',
+    padding: 15,
+    marginBottom: 15,
+    borderRadius: 8,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  categoryText: {
-    color: 'black',
-    fontSize: 16,
-  },
-  sectionTitle: {
+  itemText: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 20,
+    color: '#333',
   },
-});
+  removeButton: {
+    backgroundColor: 'red',
+    padding: 5,
+    marginTop: 5,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  removeButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  
+  });
+  
+/* References */ 

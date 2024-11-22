@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image } from 'react-native'; // (THE IIE, 2024) 
 
 export default function MainScreen({ navigation }: { navigation: any }) {
-  // Sample data for main course menu items
+  
   const initialMenuData = [
     {
       title: 'Bombay Butter Salmon',
@@ -14,13 +14,22 @@ export default function MainScreen({ navigation }: { navigation: any }) {
       description: 'burnt tomato, salsa, sage butter & crispy mint',
       price: 150.00,
     },
+    {
+      title: 'Calamari',
+      description: 'pepper cream, chicken peas, crispy bacon, grilled onions and coriander',
+      price: 90.00,
+    },
   ];
 
-  // Local state for menuItems and setMenuItems
-  const [menuItems, setMenuItems] = useState({ Main: initialMenuData });
+  
+  const [menuItems, setMenuItems] = useState({ Main: initialMenuData });  // (React Native, 2024)
 
   return (
     <ScrollView style={styles.container}>
+      <Image
+        style={styles.imageSize}
+        source={require("./images/logo.png")} 
+      />
       <Text style={styles.title}>Main</Text>
       <Text style={styles.description}>Here are some delicious main options for you!</Text>
 
@@ -32,25 +41,11 @@ export default function MainScreen({ navigation }: { navigation: any }) {
           <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
         </View>
       ))}
-
-      {/* Add New Item Button */}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => {
-          // Pass menuItems and setMenuItems to the AddItemScreen
-          navigation.navigate('AddItemScreen', {
-            menuItems: menuItems,
-            setMenuItems: setMenuItems,
-          });
-        }}
-      >
-        <Text style={styles.addButtonText}>Add New Item</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({  // (The IIE, 2024)
   container: {
     flex: 1,
     padding: 20,
@@ -64,7 +59,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    color: '#555',
+    color: 'black',
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -82,15 +77,15 @@ const styles = StyleSheet.create({
   },
   itemDescription: {
     fontSize: 14,
-    color: '#777',
+    color: 'black',
   },
   itemPrice: {
     fontSize: 16,
-    color: '#000',
+    color: 'green',
     fontWeight: 'bold',
     marginTop: 10,
   },
-  // Add styling for the "Add New Item" button
+  
   addButton: {
     backgroundColor: 'silver',
     padding: 15,
@@ -103,4 +98,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  imageSize: {
+    width: 120,
+    height: 100,
+    alignSelf: 'center',
+    marginBottom: 40,
+  },
 });
+
+
+/* References */ 
+/* The IIE. 2024. Mobile App Scripting [MAST5112 Module Manual]. The Independent Institute of Education: Unpublished [Accessed 20 November 2024]. */ 
+/* React Native.dev. (n.d.). Button .React Native. [online] Available at: https://reactnative.dev/docs/components-and-apis [Accessed 220November 2024]. */ 

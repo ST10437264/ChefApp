@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';  // (The IIE, 2024)
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert,Image } from 'react-native';
 
-export default function DessertScreen ({ navigation }: { navigation: any }) {
-  // Sample data for main course menu items
+export default function DessertScreen ({ navigation }: { navigation: any }) {  // (The IIE, 2024)
+  
   const initialMenuData = [
     {
       title: 'Lemon Cheesecake',
@@ -14,18 +14,27 @@ export default function DessertScreen ({ navigation }: { navigation: any }) {
       description: 'Warm rich double chocolate fudge cake along with vanilla ice cream',
       price: 65.00,
     },
+    {
+      title: 'Rustic Apple Tart',
+      description: 'warmly baked butter tart crust filled with cooked green apples, vanilla essence',
+      price: 96.00,
+    },
   ];
 
-  // Local state for menuItems and setMenuItems
-  const [menuItems, setMenuItems] = useState({ Dessert: initialMenuData });
+  
+  const [menuItems, setMenuItems] = useState({ Dessert: initialMenuData });  // (React Native, 2024)
 
   return (
     <ScrollView style={styles.container}>
+      <Image
+        style={styles.imageSize}
+        source={require("./images/logo.png")} 
+      />
       <Text style={styles.title}> Dessert </Text>
       <Text style={styles.description}>Here are some delicious main options for you!</Text>
 
       {/* Render the list of menu items */}
-      {menuItems.Dessert.map((item, index) => (
+      {menuItems.Dessert.map((item, index) => (  // (React Native, 2024)
         <View key={index} style={styles.menuItem}>
           <Text style={styles.itemTitle}>{item.title}</Text>
           <Text style={styles.itemDescription}>{item.description}</Text>
@@ -33,24 +42,11 @@ export default function DessertScreen ({ navigation }: { navigation: any }) {
         </View>
       ))}
 
-      {/* Add New Item Button */}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => {
-          // Pass menuItems and setMenuItems to the AddItemScreen
-          navigation.navigate('AddItemScreen', {
-            menuItems: menuItems,
-            setMenuItems: setMenuItems,
-          });
-        }}
-      >
-        <Text style={styles.addButtonText}>Add New Item</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({  // (The IIE, 2024)
   container: {
     flex: 1,
     padding: 20,
@@ -64,7 +60,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    color: '#555',
+    color: 'black',
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -82,15 +78,15 @@ const styles = StyleSheet.create({
   },
   itemDescription: {
     fontSize: 14,
-    color: '#777',
+    color: 'black',
   },
   itemPrice: {
     fontSize: 16,
-    color: '#000',
+    color: 'green',
     fontWeight: 'bold',
     marginTop: 10,
   },
-  // Add styling for the "Add New Item" button
+  
   addButton: {
     backgroundColor: 'silver',
     padding: 15,
@@ -103,4 +99,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  imageSize: {
+    width: 120,
+    height: 100,
+    alignSelf: 'center',
+    marginBottom: 40,
+  },
+
 });
+
+
+/* References */ 
+/* The IIE. 2024. Mobile App Scripting [MAST5112 Module Manual]. The Independent Institute of Education: Unpublished [Accessed 20 November 2024]. */ 
+/* React Native.dev. (n.d.). Button .React Native. [online] Available at: https://reactnative.dev/docs/components-and-apis [Accessed 220November 2024]. */ 
