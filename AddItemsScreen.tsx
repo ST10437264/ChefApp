@@ -194,3 +194,6 @@ const styles = StyleSheet.create({   // (The IIE, 2024)
   });
   
 /* References */ 
+
+/* The IIE. 2024. Mobile App Scripting [MAST5112 Module Manual]. The Independent Institute of Education: Unpublished [Accessed 20 November 2024]. */ 
+/* React Native.dev. (n.d.). Button .React Native. [online] Available at: https://reactnative.dev/docs/components-and-apis [Accessed 20 November 2024]. */ 
